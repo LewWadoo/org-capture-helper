@@ -31,12 +31,14 @@
   (todo keyword demote)
   (insert task))
 
-(defun whether-insert-task (question insert-task-function)
+(defun whether-insert-function (question true-function &optional false-function)
   "Whether add next task"
   (if (equal ?y (read-char-choice (concat question " (y/n)?") '(?y ?n)))
-      (call-interactively insert-task-function)
+      (call-interactively function)
+    (if false-function
+	(call-interactively false-function)))
     (kill-condition)
-    (kill-line nil)))
+    (kill-line nil))
 
 (defun whether-add-org-capture-task (question abbreviation &optional demote)
   "Whether add org-capture task"
@@ -55,9 +57,9 @@
 (defun whether-insert-tasks (question true-tasks &optional false-tasks)
   "Whether add tasks"
   (if (equal ?y (read-char-choice (concat question " (y/n)?") '(?y ?n)))
-      (insert-task true-tasks)
+      (insert-tasks true-tasks)
     (if false-tasks
-	(insert-task false-tasks)
+	(insert-tasks false-tasks)
       (kill-condition))))
 
 (defun insert-tasks (tasks)
