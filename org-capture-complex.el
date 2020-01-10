@@ -74,7 +74,7 @@
 (defun kill-condition ()
   "Kill condition for inserting task"
   (move-beginning-of-line nil)
-  (kill-line nil))
+  (kill-line 1))
 
 (defun insert-task (task keyword demote)
   "Insert task"
@@ -93,47 +93,43 @@
 (defun whether-add-org-capture-task (question abbreviation demote)
   "Whether add org-capture task"
   (when (equal ?y (read-char-choice (concat question " (y/n)?") '(?y ?n)))
-    (insert (concat "(org-capture 0 " "\"" abbreviation "\")")))
-  (kill-condition)
-  (kill-line nil))
+    (insert-org-capture-task abbreviation)))
 
 (defun whether-insert-org-capture-task (question true-abbreviation false-abbreviation)
   "Add TRUE-ABBREVIATION or FALSE-ABBREVIATION org-capture task"
   (if (equal ?y (read-char-choice (concat question " (y/n)?") '(?y ?n)))
-      (insert (concat "(org-capture 0 " "\"" true-abbreviation "\")"))
+      (insert-org-capture-task true-abbreviation)
     (if false-abbreviation
-	(insert (concat "(org-capture 0 " "\"" false-abbreviation "\")"))))
-    (kill-condition))
+	(insert-org-capture-task false-abbreviation))))
 
 (defun whether-add-next-task (question task demote)
   "Whether add next task"
   (kill-condition)
-  (kill-line nil)
   (when (equal ?y (read-char-choice (concat question " (y/n)?") '(?y ?n)))
     (insert-task task 3 demote)
     (insert "\n")))
 
-(defun whether-insert-tasks (question true-tasks false-tasks)
-  "Whether add tasks"
+(defun whether-insert-tasks (question true-tasks false-tasks keyword demote)
+  "Insert TRUE-TASKS if answer to QUESTION is y, or FALSE-TASKS if answer is n"
   (if (equal ?y (read-char-choice (concat question " (y/n)?") '(?y ?n)))
-      (insert-tasks true-tasks)
+      (insert-tasks true-tasks keyword demote)
     (if false-tasks
-	(insert-tasks false-tasks)
+	(insert-tasks false-tasks keyword demote)
       (kill-condition))))
 
 (defun insert-tasks-by-autocondition (condition true-tasks false-tasks)
   "Whether add tasks"
   (if condition
-      (insert-tasks true-tasks)
+      (insert-tasks true-tasks 1 0)
     (if false-tasks
-	(insert-tasks false-tasks)
-      (kill-condition))))
+	(insert-tasks false-tasks 1 0))))
 
-(defun insert-tasks (tasks)
+(defun insert-tasks (tasks keyword demote)
   "Insert TASKS"
   (kill-condition)
   (while tasks
-    (insert-task (car tasks) 1 0)
+    (insert-task (car tasks) keyword demote)
+    (setq demote 0)
     (setq tasks (cdr tasks))))
 
 (defun insert-org-capture-task (abbreviation)
