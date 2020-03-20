@@ -101,7 +101,8 @@
   (if (equal ?y (read-char-choice (concat question " (y/n)?") '(?y ?n)))
       (insert-org-capture-task true-abbreviation)
     (if false-abbreviation
-	(insert-org-capture-task false-abbreviation))))
+	(insert-org-capture-task false-abbreviation)
+      (kill-condition))))
 
 (defun whether-add-next-task (question task demote)
   "Whether add next task"
