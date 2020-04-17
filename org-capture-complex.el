@@ -1,49 +1,3 @@
-;; obsolete functions -->
-(defun insert-task-approve-email ()
-  "Approve email"
-  (interactive)
-  (kill-condition)
-  (setq org-inhibit-logging t)
-  (todo 2)
-  (insert "Подтвердить электронную почту")
-  (todo 3 1)
-  (insert "Зайти в аккаунт lewwadoo@gmail.com")
-  (todo 1)
-  (insert "Открыть непрочитанное письмо с сайта, требующего подтверждение почты")
-  (todo 1)
-  (insert "Перейти по ссылке из письма для подтверждения почты"))
-
-(defun privacy-policy-task ()
-  "Политика конфиденциальности приложения"
-  (move-beginning-of-line nil)
-;  (kill-line nil)
-  (kill-line nil)
-  (insert (concat (todo 3) "")))
-
-(defun insert-task-terms-of-service ()
-  "Insert tasks to deal with Terms of Service"
-  (interactive)
-  (kill-condition)
-  (setq org-inhibit-logging t)
-  (todo 3)
-  (insert "Просмотреть \"Условия использования приложения\"")
-  (todo 1)
-  (insert "Согласиться с \"Условиями использования приложения\""))
-
-(defun insert-task-term-of-blocking-account ()
-  "Insert task if term of blocking account exists"
-  (kill-condition)
-  (setq org-inhibit-logging t)
-  (todo 3)
-  (insert "Скопировать пункт соглашения, в котором описываются условия блокирования аккаунта")
-  (todo 1)
-  (insert "Выставить время истечения действия аккаунта на минимальный срок начала блокирования"))
-
-;; <-- obsolete functions
-
-
-
-
 (defun insert-todo (keyword &optional demote)
   "Insert todo"
   (with-temp-buffer
@@ -111,7 +65,7 @@
     (insert-task task 3 demote)
     (insert "\n")))
 
-(defun whether-insert-tasks (question true-tasks false-tasks keyword demote)
+(defun whether-insert-tasks (question true-tasks false-tasks &optional keyword demote)
   "Insert TRUE-TASKS if answer to QUESTION is y, or FALSE-TASKS if answer is n"
   (if (equal ?y (read-char-choice (concat question " (y/n)?") '(?y ?n)))
       (insert-tasks true-tasks keyword demote)
