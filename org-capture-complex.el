@@ -44,7 +44,7 @@
     (kill-condition)
     (kill-line nil))
 
-(defun whether-add-org-capture-task (question abbreviation demote)
+(defun whether-add-org-capture-task (question abbreviation &optional demote)
   "Whether add org-capture task"
   (if (equal ?y (read-char-choice (concat question " (y/n)?") '(?y ?n)))
       (insert-org-capture-task abbreviation)
@@ -58,7 +58,7 @@
 	(insert-org-capture-task false-abbreviation)
       (kill-condition))))
 
-(defun whether-add-next-task (question task demote)
+(defun whether-add-next-task (question task &optional demote)
   "Whether add next task"
   (kill-condition)
   (when (equal ?y (read-char-choice (concat question " (y/n)?") '(?y ?n)))
