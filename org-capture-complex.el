@@ -65,7 +65,7 @@
     (insert-task task 3 demote)
     (insert "\n")))
 
-(defun whether-insert-tasks (question true-tasks false-tasks &optional keyword demote)
+(defun whether-insert-tasks (question true-tasks &optional false-tasks keyword demote)
   "Insert TRUE-TASKS if answer to QUESTION is y, or FALSE-TASKS if answer is n"
   (if (equal ?y (read-char-choice (concat question " (y/n)?") '(?y ?n)))
       (insert-tasks true-tasks keyword demote)
