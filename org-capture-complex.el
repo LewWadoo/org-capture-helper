@@ -50,7 +50,7 @@
       (insert-org-capture-task abbreviation)
     (kill-condition)))
 
-(defun whether-insert-org-capture-task (question true-abbreviation false-abbreviation)
+(defun whether-insert-org-capture-task (question true-abbreviation &optional false-abbreviation)
   "Add TRUE-ABBREVIATION or FALSE-ABBREVIATION org-capture task"
   (if (equal ?y (read-char-choice (concat question " (y/n)?") '(?y ?n)))
       (insert-org-capture-task true-abbreviation)
