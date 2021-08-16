@@ -35,7 +35,7 @@
   (todo keyword demote)
   (insert task))
 
-(defun whether-insert-function (question true-function false-function)
+(defun whether-insert-function (question true-function &optional false-function)
   "Whether insert function"
   (if (equal ?y (read-char-choice (concat question " (y/n)?") '(?y ?n)))
       (call-interactively function)
