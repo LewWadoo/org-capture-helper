@@ -1,9 +1,29 @@
-(defun insert-todo (keyword &optional demote)
-  "Insert todo"
+(defun insert-todo (keyword-number-in-sequence &optional demote)
+  "Insert todo instead of hard-typing '** TODO'
+
+KEYWORD-NUMBER-IN-SEQUENCE is the number of org-todo-keyword in org-todo-keywords:
+````
+(setq org-todo-keywords
+      '((sequence \"TODO(t)\" \"PROJECT(p)\" \"NEXT(n)\" \"WAIT(w@/!)\" \"DELEGATED(l@/!)\" \"MAYBE(m)\" \"|\" \"DONE(d)\" \"CANCELED(c@)\" \"FAILED(f@)\")))
+````
+
+DEMOTE is how far the current task will demote (> 0) or promote (< 0) from the previous task.
+
+In a template instead of typing
+````
+** PROJECT Hard project
+*** NEXT Turn on the computer
+````
+you can type
+````
+%(insert-todo 2)Hard project
+%(insert-todo 3 1)Turn on the computer
+````
+"
   (with-temp-buffer
     (org-mode)
-    (org-insert-todo-heading keyword)
-    (org-todo keyword)
+    (org-insert-todo-heading keyword-number-in-sequence)
+    (org-todo keyword-number-in-sequence)
     (when demote
       (while (> demote 0)
 	(org-do-demote)
