@@ -23,3 +23,13 @@ you can type
 %(insert-todo 3 1)Turn on the computer
 ````
 
+## whether-add-org-capture-task
+````
+whether-add-org-capture-task (question abbreviation)
+````
+Type QUESTION that has answer yes or no. If yes then insert org-capture task by its ABBREVIATION.
+
+First evaluate this expression (move cursor to the end of the function and type C-x C-e), then answer the question. If you answer no, then the task will be gone, else the org-capture task will replace the task. Example of calling this function:
+````
+%(insert-todo 3 1)(whether-add-org-capture-task \"The program is not launched\" \"gtaulapp\")
+````
