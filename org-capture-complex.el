@@ -33,6 +33,12 @@ you can type
 	(setq demote (1+ demote))))
     (buffer-substring-no-properties (point-min)(point-max))))
 
+(defun whether-add-org-capture-task (question abbreviation)
+  "Type QUESTION that has answer yes or no. If yes then insert org-capture task by its ABBREVIATION."
+  (if (equal ?y (read-char-choice (concat question " (y/n)?") '(?y ?n)))
+      (insert-org-capture-task abbreviation)
+    (kill-condition)))
+
 (defun todo (keyword demote)
   "Return any org-todo heading"
   (org-insert-todo-heading keyword)
@@ -64,14 +70,14 @@ you can type
     (kill-condition)
     (kill-line nil))
 
-(defun whether-add-org-capture-task (question abbreviation &optional demote)
-  "Whether add org-capture task"
-  (if (equal ?y (read-char-choice (concat question " (y/n)?") '(?y ?n)))
-      (insert-org-capture-task abbreviation)
-    (kill-condition)))
-
 (defun whether-insert-org-capture-task (question true-abbreviation &optional false-abbreviation)
-  "Add TRUE-ABBREVIATION or FALSE-ABBREVIATION org-capture task"
+  "Type QUESTION that has answer yes or no. If yes then insert org-capture task by its ABBREVIATION.
+
+First evaluate this expression (move cursor to the end of the function and type C-x C-e), then answer the question. If you answer no, then the task will be gone, else the org-capture task will replace the task. Example of calling this function:
+````
+%(insert-todo 3 1)(whether-add-org-capture-task \"The program is not launched\" \"gtaulapp\")
+````
+"
   (if (equal ?y (read-char-choice (concat question " (y/n)?") '(?y ?n)))
       (insert-org-capture-task true-abbreviation)
     (if false-abbreviation
