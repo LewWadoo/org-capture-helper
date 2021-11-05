@@ -33,11 +33,12 @@ you can type
 	(setq demote (1+ demote))))
     (buffer-substring-no-properties (point-min)(point-max))))
 
-(defun whether-add-org-capture-task (question abbreviation)
-  "Type QUESTION that has answer yes or no. If yes then insert org-capture task by its ABBREVIATION."
-  (if (equal ?y (read-char-choice (concat question " (y/n)?") '(?y ?n)))
-      (insert-org-capture-task abbreviation)
-    (kill-condition)))
+;; deprecated: use whether-insert-org-capture-task instead
+;; (defun whether-add-org-capture-task (question abbreviation)
+;;   "Type QUESTION that has answer yes or no. If yes then insert org-capture task by its ABBREVIATION."
+;;   (if (equal ?y (read-char-choice (concat question " (y/n)?") '(?y ?n)))
+;;       (insert-org-capture-task abbreviation)
+;;     (kill-condition)))
 
 (defun todo (keyword demote)
   "Return any org-todo heading"
@@ -71,11 +72,11 @@ you can type
     (kill-line nil))
 
 (defun whether-insert-org-capture-task (question true-abbreviation &optional false-abbreviation)
-  "Type QUESTION that has answer yes or no. If yes then insert org-capture task by its ABBREVIATION.
+  "Type QUESTION that has answer yes or no. If yes then insert org-capture task by TRUE-ABBREVIATION, if no then insert org-capture task by FALSE-ABBREVIATION or just delete the question.
 
-First evaluate this expression (move cursor to the end of the function and type C-x C-e), then answer the question. If you answer no, then the task will be gone, else the org-capture task will replace the task. Example of calling this function:
+First evaluate this expression (move cursor to the end of the function and type C-x C-e), then answer the question. If you answer no, then the task will be gone or org-capture task with FALSE-ABBREVIATION will replace the task, else the org-capture task with TRUE-ABBREVIATION will replace the task. Example of calling this function:
 ````
-%(insert-todo 3 1)(whether-add-org-capture-task \"The program is not launched\" \"gtaulapp\")
+%(insert-todo 3 1)(whether-insert-org-capture-task \"The program is not launched\" \"gtaulapp\")
 ````
 "
   (if (equal ?y (read-char-choice (concat question " (y/n)?") '(?y ?n)))
