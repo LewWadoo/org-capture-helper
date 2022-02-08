@@ -92,6 +92,17 @@ First evaluate this expression (move cursor to the end of the function and type 
     (insert-task task 3 demote)
     (insert "\n")))
 
+(defun whether-insert-tasks-3 (question tasks-1 tasks-2 tasks-3 &optional keyword demote)
+  "Insert TASKS-1 if answer to QUESTION is 1, TASKS-2 if answer to QUESTION is 2, or TASKS-3 if answer is 3"
+(let ((answer (read-char-choice (concat question " (1/2/3)?") '(?1 ?2 ?3))))
+  (if (equal ?1 answer)
+      (insert-tasks tasks-1 keyword demote)
+    (if (equal ?2 answer)
+	(insert-tasks tasks-1 keyword demote)
+      (if (equal ?3 answer)
+	  (insert-tasks tasks-3 keyword demote)
+	(kill-condition))))))
+
 (defun whether-insert-tasks (question true-tasks &optional false-tasks keyword demote)
   "Insert TRUE-TASKS if answer to QUESTION is y, or FALSE-TASKS if answer is n"
   (if (equal ?y (read-char-choice (concat question " (y/n)?") '(?y ?n)))
