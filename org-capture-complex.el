@@ -57,8 +57,8 @@ you can type
   (move-beginning-of-line nil)
   (kill-line 1))
 
-(defun insert-task (task keyword demote)
-  "Insert task"
+(defun insert-task (task &optional keyword demote)
+  "Insert TASK."
   (todo keyword demote)
   (insert task))
 
