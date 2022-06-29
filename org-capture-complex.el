@@ -1,3 +1,10 @@
+(defun make-file (file-name directory)
+  "Make file FILE-NAME in directory DIRECTORY."
+  (let ((file-name-full (expand-file-name file-name directory)))
+    (unless (file-exists-p file-name-full)
+      (make-directory directory t)
+      (find-file file-name-full))))
+
 (defun insert-todo (keyword-number-in-sequence &optional demote)
   "Insert todo instead of hard-typing '** TODO'
 
