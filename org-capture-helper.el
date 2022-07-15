@@ -138,4 +138,4 @@ First evaluate this expression (move cursor to the end of the function and type 
   (kill-condition)
   (org-capture 0 abbreviation))
   
-(provide 'org-capture-complex)
+(provide 'org-capture-helper)
