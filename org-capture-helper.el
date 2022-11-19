@@ -62,6 +62,7 @@ you can type
 (defun kill-condition ()
   "Kill condition for inserting task"
   (move-beginning-of-line nil)
+  (org-cycle)
   (kill-line 1))
 
 (defun insert-task (task &optional keyword demote)
