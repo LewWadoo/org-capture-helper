@@ -1,3 +1,4 @@
+
 (defun make-file (file-name directory)
   "Make file FILE-NAME in directory DIRECTORY."
   (let ((file-name-full (expand-file-name file-name directory)))
@@ -119,12 +120,12 @@ First evaluate this expression (move cursor to the end of the function and type 
 	(insert-tasks false-tasks keyword demote)
       (kill-condition))))
 
-(defun insert-tasks-by-autocondition (condition true-tasks false-tasks)
-  "Whether add tasks"
-  (if condition
-      (insert-tasks true-tasks 1 0)
-    (if false-tasks
-	(insert-tasks false-tasks 1 0))))
+;; (defun insert-tasks-by-autocondition (condition true-tasks false-tasks)
+;;   "Whether add tasks"
+;;   (if condition
+;;       (insert-tasks true-tasks 1 0)
+;;     (if false-tasks
+;; 	(insert-tasks false-tasks 1 0))))
 
 (defun insert-tasks (tasks keyword demote)
   "Insert TASKS"
