@@ -1,4 +1,5 @@
 
+
 (defun make-file (file-name directory)
   "Make file FILE-NAME in directory DIRECTORY."
   (let ((file-name-full (expand-file-name file-name directory)))
@@ -135,9 +136,25 @@ First evaluate this expression (move cursor to the end of the function and type 
     (setq demote 0)
     (setq tasks (cdr tasks))))
 
-(defun insert-org-capture-task (abbreviation)
-  "Insert org-capture task ABBREVIATION."
+;; (defun insert-org-capture-task (abbreviation)
+;;   "Insert org-capture task ABBREVIATION."
+;;   (kill-condition)
+;;   (org-capture 0 abbreviation))
+
+;; (defun insert-org-capture-task (abbreviation &rest vars)
+;;   "Insert org-capture task ABBREVIATION with additional variables VARS (a plist)."
+;;   (kill-condition)
+;;   (let ((props (when vars `(:var ,(cl-loop for (k v) on vars by #'cddr collect (cons k v))))))
+;;     (org-capture nil abbreviation props)))
+
+(defun insert-org-capture-task (abbreviation &rest vars)
+  "Insert org-capture task ABBREVIATION with extra variables VARS.
+
+VARS is a plist where keys are :symbols and values are strings."
   (kill-condition)
-  (org-capture 0 abbreviation))
-  
+  ;; Set the org-capture plist with supplied variables
+  (org-capture-set-plist vars)
+  ;; call org-capture with abbreviation key; only 2 args supported
+  (org-capture nil abbreviation))
+
 (provide 'org-capture-helper)
