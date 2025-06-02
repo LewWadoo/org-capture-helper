@@ -136,25 +136,18 @@ First evaluate this expression (move cursor to the end of the function and type 
     (setq demote 0)
     (setq tasks (cdr tasks))))
 
-;; (defun insert-org-capture-task (abbreviation)
-;;   "Insert org-capture task ABBREVIATION."
-;;   (kill-condition)
-;;   (org-capture 0 abbreviation))
-
-;; (defun insert-org-capture-task (abbreviation &rest vars)
-;;   "Insert org-capture task ABBREVIATION with additional variables VARS (a plist)."
-;;   (kill-condition)
-;;   (let ((props (when vars `(:var ,(cl-loop for (k v) on vars by #'cddr collect (cons k v))))))
-;;     (org-capture nil abbreviation props)))
-
-(defun insert-org-capture-task (abbreviation &rest vars)
-  "Insert org-capture task ABBREVIATION with extra variables VARS.
-
-VARS is a plist where keys are :symbols and values are strings."
+(defun insert-org-capture-task (abbreviation &rest args)
+  "Insert org-capture task ABBREVIATION with extra arguments ARGS.
+ARGS is a list of cons cells where each cell contains (KEY . VALUE)."
   (kill-condition)
-  ;; Set the org-capture plist with supplied variables
-  (org-capture-set-plist vars)
-  ;; call org-capture with abbreviation key; only 2 args supported
-  (org-capture nil abbreviation))
+  
+  ;; Store the variables for later use directly
+  (dolist (pair args)
+    (let ((key (car pair))       ;; The key, e.g., 'branch-name-for-this-story
+          (value (cdr pair)))     ;; The associated value
+      (set key value)))          ;; Set the variable using the key directly
+  
+  ;; Call org-capture with the abbreviation key; only 2 args are supported
+  (org-capture 0 abbreviation))
 
 (provide 'org-capture-helper)
