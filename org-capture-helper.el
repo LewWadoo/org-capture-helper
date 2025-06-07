@@ -95,6 +95,14 @@ First evaluate this expression (move cursor to the end of the function and type 
 	(insert-org-capture-task false-abbreviation)
       (kill-condition))))
 
+(defun whether-insert-org-capture-task (question abbreviation &rest args)
+  "Ask QUESTION that requires a yes or no answer. If the answer is yes, insert an org-capture task using ABBREVIATION with any additional ARGS. If the answer is no, do nothing.
+
+This function can be called with any number of additional arguments that will be passed to `insert-org-capture-task`."
+  (if (y-or-n-p question)
+       (apply 'insert-org-capture-task abbreviation args)
+    (kill-condition)))
+
 (defun whether-add-next-task (question task &optional demote)
   "Whether add next task"
   (kill-condition)
