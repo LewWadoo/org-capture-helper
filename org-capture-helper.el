@@ -81,20 +81,6 @@ you can type
     (kill-condition)
     (kill-line nil))
 
-(defun whether-insert-org-capture-task (question true-abbreviation &optional false-abbreviation)
-  "Type QUESTION that has answer yes or no. If yes then insert org-capture task by TRUE-ABBREVIATION, if no then insert org-capture task by FALSE-ABBREVIATION or just delete the question.
-
-First evaluate this expression (move cursor to the end of the function and type C-x C-e), then answer the question. If you answer no, then the task will be gone or org-capture task with FALSE-ABBREVIATION will replace the task, else the org-capture task with TRUE-ABBREVIATION will replace the task. Example of calling this function:
-````
-%(insert-todo 3 1)(whether-insert-org-capture-task \"The program is not launched\" \"gtaulapp\")
-````
-"
-  (if (equal ?y (read-char-choice (concat question " (y/n)?") '(?y ?n)))
-      (insert-org-capture-task true-abbreviation)
-    (if false-abbreviation
-	(insert-org-capture-task false-abbreviation)
-      (kill-condition))))
-
 (defun whether-insert-org-capture-task (question abbreviation &rest args)
   "Ask QUESTION that requires a yes or no answer. If the answer is yes, insert an org-capture task using ABBREVIATION with any additional ARGS. If the answer is no, do nothing.
 
