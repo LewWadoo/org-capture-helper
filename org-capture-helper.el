@@ -1,5 +1,7 @@
 ;;; org-capture-helper.el --- Helper functions for org-capture templates -*- lexical-binding: t; -*-
 
+;; Version: 2.0.0
+
 ;;; Commentary:
 ;; This package provides helper functions for org-capture templates,
 ;; making it easier to create complex and conditional templates with
@@ -9,6 +11,15 @@
 ;; - `insert-todo`: Insert a TODO item with specified keyword and indentation
 ;; - `whether-insert-tasks`: Conditionally insert tasks based on yes/no question
 ;; - `insert-org-capture-task`: Insert an org-capture task with custom arguments
+;; - `whether-insert-org-capture-task`: Conditionally insert an org-capture task
+
+;; - `make-file`: Create a file in a directory
+;;
+;; Version 2.0.0 Changes:
+;; - Removed unused functions: `whether-insert-function` and `whether-add-org-capture-task`
+;; - Removed redundant function: `whether-add-next-task` (replaced with `whether-insert-tasks`)
+;; - Added helper function: `apply-heading-level-change` to reduce code duplication
+;; - Streamlined API based on real usage patterns
 
 ;;; Code:
 
@@ -29,7 +40,7 @@ Create directory if it doesn't exist yet."
 KEYWORD-NUMBER-IN-SEQUENCE is the number of org-todo-keyword in org-todo-keywords:
 ````
 (setq org-todo-keywords
-      '((sequence \"TODO(t)\" \"PROJECT(p)\" \"NEXT(n)\" \"WAIT(w@/!)\" 
+      '((sequence \"PROJECT(p)\" \"TODO(t)\" \"NEXT(n)\" \"WAIT(w@/!)\" 
          \"DELEGATED(l@/!)\" \"MAYBE(m)\" \"|\" \"DONE(d)\" \"CANCELED(c@)\" \"FAILED(f@)\")))
 ````
 
@@ -42,7 +53,7 @@ In a template instead of typing
 ````
 you can type
 ````
-%(insert-todo 2)Hard project
+%(insert-todo 1)Hard project
 %(insert-todo 3 1)Turn on the computer
 ````
 "
@@ -50,14 +61,7 @@ you can type
     (org-mode)
     (org-insert-todo-heading keyword-number-in-sequence)
     (org-todo keyword-number-in-sequence)
-    (when demote
-      (cond
-       ;; Demote the heading
-       ((> demote 0)
-        (dotimes (_ demote) (org-do-demote)))
-       ;; Promote the heading
-       ((< demote 0)
-        (dotimes (_ (abs demote)) (org-do-promote)))))
+    (apply-heading-level-change demote)
     (buffer-substring-no-properties (point-min) (point-max))))
 
 (defun kill-condition ()
@@ -67,11 +71,9 @@ Removes the current line after cycling visibility."
   (org-cycle)
   (kill-line 1))
 
-(defun todo (keyword demote)
-  "Create an org-todo heading with KEYWORD index and DEMOTE levels.
-KEYWORD is the index of the todo keyword to use.
+(defun apply-heading-level-change (demote)
+  "Apply DEMOTE level changes to current heading.
 DEMOTE specifies how many levels to demote (positive) or promote (negative)."
-  (org-insert-todo-heading keyword)
   (when demote
     (cond
      ;; Demote the heading
@@ -81,6 +83,13 @@ DEMOTE specifies how many levels to demote (positive) or promote (negative)."
      ((< demote 0)
       (dotimes (_ (abs demote)) (org-do-promote))))))
 
+(defun todo (keyword demote)
+  "Create an org-todo heading with KEYWORD index and DEMOTE levels.
+KEYWORD is the index of the todo keyword to use.
+DEMOTE specifies how many levels to demote (positive) or promote (negative)."
+  (org-insert-todo-heading keyword)
+  (apply-heading-level-change demote))
+
 (defun insert-task (task &optional keyword demote)
   "Insert TASK as an org heading.
 Optional KEYWORD specifies the todo keyword index to use.
@@ -88,16 +97,7 @@ Optional DEMOTE specifies how many levels to demote (positive) or promote (negat
   (todo keyword demote)
   (insert task))
 
-(defun whether-insert-function (question true-function &optional false-function)
-  "Conditionally execute a function based on yes/no response.
-Ask QUESTION and execute TRUE-FUNCTION if answer is yes,
-or FALSE-FUNCTION if answer is no and FALSE-FUNCTION is provided."
-  (if (y-or-n-p question)
-      (call-interactively true-function)
-    (when false-function
-      (call-interactively false-function)))
-  (kill-condition)
-  (kill-line nil))
+
 
 (defun whether-insert-org-capture-task (question abbreviation &rest args)
   "Conditionally insert an org-capture task based on yes/no response.
@@ -108,14 +108,7 @@ If the answer is no, do nothing."
       (apply #'insert-org-capture-task abbreviation args)
     (kill-condition)))
 
-(defun whether-add-next-task (question task &optional demote)
-  "Conditionally insert TASK with NEXT state based on yes/no response.
-Ask QUESTION and insert TASK with the NEXT state if answer is yes.
-Optional DEMOTE specifies how many levels to demote (positive) or promote (negative)."
-  (kill-condition)
-  (when (y-or-n-p question)
-    (insert-task task 3 demote)
-    (insert "\n")))
+
 
 (defun whether-insert-tasks-3 (question tasks-1 tasks-2 tasks-3 &optional keyword demote)
   "Insert tasks based on a 3-choice response.
@@ -173,14 +166,34 @@ ARGS is a list of cons cells where each cell contains (KEY . VALUE)."
      (message "Error inserting org capture task with key '%s': %s" 
               abbreviation (error-message-string err)))))
 
-;; Deprecated function - kept for backward compatibility
-(defun whether-add-org-capture-task (question abbreviation &rest args)
-  "Deprecated: Use whether-insert-org-capture-task instead.
-Ask QUESTION and insert org-capture task with ABBREVIATION if answer is yes."
-  (display-warning 'org-capture-helper
-                  "whether-add-org-capture-task is deprecated, use whether-insert-org-capture-task instead"
-                  :warning)
-  (apply #'whether-insert-org-capture-task question abbreviation args))
+(defun org-capture-helper--in-capture-context-p ()
+  "Return non-nil if called within an org-capture template context.
+This is a utility function to determine if we should perform
+certain operations that only make sense during org-capture."
+  (or (bound-and-true-p org-capture-mode)
+      (and (boundp 'org-capture-current-plist)
+           org-capture-current-plist)))
+
+(defun org-capture-helper-auto-insert-tasks (condition-fn true-tasks &optional false-tasks keyword demote)
+  "Automatically insert tasks based on the result of evaluating CONDITION-FN.
+CONDITION-FN should be a function that returns a boolean value.
+If CONDITION-FN returns nil, insert TRUE-TASKS.
+If CONDITION-FN returns non-nil and FALSE-TASKS is provided, insert FALSE-TASKS instead.
+TRUE-TASKS and FALSE-TASKS should be lists of strings, each representing a task to insert.
+This is similar to `whether-insert-tasks` but automatically decides based on
+the function's return value instead of asking the user."
+  ;; Kill the current line in capture context (like kill-condition)
+  ;; (when (org-capture-helper--in-capture-context-p)
+  ;;   (kill-condition))
+  
+  ;; Evaluate condition and return appropriate tasks
+  (let ((result (and (functionp condition-fn)
+                    (funcall condition-fn))))
+    (if result
+      (insert-tasks true-tasks keyword demote)
+      (if false-tasks
+        (insert-tasks false-tasks keyword demote)
+	(kill-condition)))))
 
 (provide 'org-capture-helper)
 ;;; org-capture-helper.el ends here
